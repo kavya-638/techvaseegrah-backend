@@ -1,18 +1,18 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config(); // ✅ Load variables from .env
+require('dotenv').config(); // ✅ Load environment variables from .env
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // 🔐 API KEY from .env file
 const API_KEY = process.env.API_KEY;
 
-// 🔐 Middleware to check API key
+// 🔐 Middleware to check API key in request headers
 const checkApiKey = (req, res, next) => {
-  const clientKey = req.headers["x-api-key"];
+  const clientKey = req.headers['x-api-key'];
   if (clientKey !== API_KEY) {
-    return res.status(403).json({ error: "Forbidden: Invalid API Key" });
+    return res.status(403).json({ error: 'Forbidden: Invalid API Key' });
   }
   next();
 };
@@ -20,7 +20,7 @@ const checkApiKey = (req, res, next) => {
 app.use(cors());
 app.use(express.json());
 
-// 🔢 Sample Data
+// 🧾 Sample sales data for each service
 const instaxbotData = [
   { date: '2025-07-07', amount: 1200 },
   { date: '2025-07-08', amount: 900 },
@@ -51,23 +51,23 @@ const billzzyData = [
   { date: '2025-07-09', amount: 1200 }
 ];
 
-// 🔐 Apply checkApiKey to all data routes
+// 📦 Protected routes – require x-api-key header
 app.get('/api/instaxbot', checkApiKey, (req, res) => res.json(instaxbotData));
 app.get('/api/f3', checkApiKey, (req, res) => res.json(f3Data));
 app.get('/api/shoppify', checkApiKey, (req, res) => res.json(shoppifyData));
 app.get('/api/gowhats', checkApiKey, (req, res) => res.json(gowhatsData));
 app.get('/api/billzzy', checkApiKey, (req, res) => res.json(billzzyData));
 
-// 🔓 Login route (NO API key needed for login)
+// 🔓 Login route (no API key required)
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (username === 'admin' && password === '1234') {
-    res.status(200).json({ key: API_KEY }); // ✅ Send key if needed
-  } else {
-    res.sendStatus(401);
+    return res.status(200).json({ key: API_KEY });
   }
+  res.sendStatus(401);
 });
 
+// 👂 Start the server
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
