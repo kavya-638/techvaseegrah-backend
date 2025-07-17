@@ -67,6 +67,11 @@ app.post('/api/login', (req, res) => {
   res.sendStatus(401);
 });
 
+// 🏠 Root route for testing
+app.get('/', (req, res) => {
+  res.send('🎉 Welcome to Tech Vaseegrah Backend API – Use /api/* endpoints!');
+});
+
 // 👂 Start the server
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
